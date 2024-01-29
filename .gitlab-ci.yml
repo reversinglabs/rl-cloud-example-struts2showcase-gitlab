@@ -1,0 +1,37 @@
+#
+# REQUIREMENTS:
+#   RLPORTAL_ACCESS_TOKEN: must be declared as global variables type 'variable' and flagged as secret/hidden
+#
+variables:
+  RL_VERBOSE: 1
+  #
+  RLPORTAL_SERVER: test
+  RLPORTAL_ORG: Test
+  RLPORTAL_GROUP: Default
+  RL_PACKAGE_URL: test-project/struts2-showcase@v2.5.28
+  #
+  MY_ARTIFACT_TO_SCAN: struts2-showcase.war
+  PACKAGE_PATH: ./target
+  #
+  REPORT_PATH: RlReport
+
+include: # include the scanner to run on the test stage
+  - remote: 'https://raw.githubusercontent.com/reversinglabs/rl-scanner-cloud-gitlab-include/main/rl-scanner-cloud-gitlab-include.yml'
+
+maven-build:
+  stage: build
+
+  # select the most appropriate image for your project
+  image: maven:3.8-openjdk-11
+
+  artifacts:
+    name: "build_artifact"
+    paths:
+      - $PACKAGE_PATH/*
+      - public
+    expire_in: 2 weeks
+
+  script:
+    - |
+      mvn -B clean package
+      ls -l ./target
